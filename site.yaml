@@ -1,61 +1,59 @@
 ---
 - hosts: all
   gather_facts: yes
-- name: Configure HAProxy Load Balancer
+- name: Configuring HAproxy in HAproxy server
   hosts: HAproxy
   become: yes
-
   tasks:
-    - name: Install HAProxy
+    - name: Install HAproxy
       apt:
         name: haproxy
         state: latest
-
-    - name: Configure HAProxy
+    - name: Configuring HAproxy
       template:
         src: haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
       become: yes
-
-
 - hosts: webservers
   become: yes
   tasks:
     - name: Update apt cache
       apt:
         update_cache: yes
-
-    - name: Install Python3, pip3, and venv
+    - name: Install Python3
       apt:
         name:
           - python3
+        state: present
+    - name: Install pip3
+      apt:
+        name:
           - python3-pip
+        state: present
+    - name: Install venv
+      apt:
+        name:
           - python3-venv
         state: present
-
-    - name: Create flask directory
+    - name: Create flask directory in webservers
       file:
         path: /home/ubuntu/flask
         state: directory
-         - name: Change directory to flask
+    - name: Change directory to flask
       shell: cd /home/ubuntu/flask
-
     - name: Install virtualenv package
       apt:
         name: python3-virtualenv
         state: present
-
     - name: Creating virtual environment
       file:
         path: /home/ubuntu/flask/venv
         state: directory
         mode: '0755'
-
     - name: Set up virtual environment
       pip:
         name: Flask
         virtualenv: /home/ubuntu/flask/venv
-
     - name: Set permissions for virtual environment
       become: yes
       become_user: root
@@ -63,8 +61,48 @@
         path: /home/ubuntu/flask/venv
         mode: '0755'
         recurse: yes
-
     - name: Copy Flask app file
       copy:
         src: app.py
         dest: /home/ubuntu/flask/venv/app.py
+- name: Configure SSH keepalive
+  hosts: all
+  become: yes
+  vars:
+    ssh_keepalive_interval: 300
+  tasks:
+    - name: Setting SSH keepalive interval
+      lineinfile:
+       dest: /etc/ssh/config
+       regexp: ^#?ClientAliveInterval
+       line: ClientAliveInterval {{ ssh_keepalive_interval }}
+       state: present
+       create: yes
+       backup: yes
+
+    - name: Setting SSH keepalive count
+      lineinfile:
+       dest: /etc/ssh/config
+       regexp: '^#?ClientAliveCountMax'
+       line: 'ClientAliveCountMax 5000'
+       state: present
+       create: yes
+       backup: yes
+
+    - name: Restart SSH service
+      service:
+       name: ssh
+       state: restarted
+- name: Test HAProxy
+  hosts: HAproxy
+  become: yes
+  tasks:
+      - name: Install curl
+        apt:
+         name: curl
+         state: latest
+
+      - name: Test HAProxy configuration
+        shell: curl http://localhost/
+        register: curl_output
+        ignore_errors: true 
