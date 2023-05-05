@@ -35,7 +35,7 @@
         name:
           - python3-venv
         state: present
-    - name: Create flask directory in webservers
+    - name: Create flask-app directory in webservers
       file:
         path: /home/ubuntu/flask-app
         state: directory
