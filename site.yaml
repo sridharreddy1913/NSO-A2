@@ -37,34 +37,34 @@
         state: present
     - name: Create flask directory in webservers
       file:
-        path: /home/ubuntu/flask
+        path: /home/ubuntu/flask-app
         state: directory
-    - name: Change directory to flask
-      shell: cd /home/ubuntu/flask
+    - name: Change directory to flask-app
+      shell: cd /home/ubuntu/flask-app
     - name: Install virtualenv package
       apt:
         name: python3-virtualenv
         state: present
     - name: Creating virtual environment
       file:
-        path: /home/ubuntu/flask/venv
+        path: /home/ubuntu/flask-app/venv
         state: directory
         mode: '0755'
     - name: Set up virtual environment
       pip:
         name: Flask
-        virtualenv: /home/ubuntu/flask/venv
+        virtualenv: /home/ubuntu/flask-app/venv
     - name: Set permissions for virtual environment
       become: yes
       become_user: root
       file:
-        path: /home/ubuntu/flask/venv
+        path: /home/ubuntu/flask-app/venv
         mode: '0755'
         recurse: yes
     - name: Copy Flask app file
       copy:
-        src: app.py
-        dest: /home/ubuntu/flask/venv/app.py
+        src: application2.py
+        dest: /home/ubuntu/flask-app/venv/application2.py
 - name: Configure SSH keepalive
   hosts: all
   become: yes
@@ -102,7 +102,7 @@
          name: curl
          state: latest
 
-      - name: Test HAProxy configuration
+      - name: Test HAproxy configuration
         shell: curl http://localhost/
         register: curl_output
         ignore_errors: true 
