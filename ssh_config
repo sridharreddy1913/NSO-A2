@@ -31,6 +31,7 @@ Host devB
   ProxyJump bastionNSO
   StrictHostKeyChecking no
   PasswordAuthentication no
+  
 Host devC
   User ubuntu
   HostName 89.42.141.40
