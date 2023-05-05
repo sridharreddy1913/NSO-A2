@@ -1,0 +1,70 @@
+---
+- hosts: all
+  gather_facts: yes
+- name: Configure HAProxy Load Balancer
+  hosts: HAproxy
+  become: yes
+
+  tasks:
+    - name: Install HAProxy
+      apt:
+        name: haproxy
+        state: latest
+
+    - name: Configure HAProxy
+      template:
+        src: haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+      become: yes
+
+
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Python3, pip3, and venv
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-venv
+        state: present
+
+    - name: Create flask directory
+      file:
+        path: /home/ubuntu/flask
+        state: directory
+         - name: Change directory to flask
+      shell: cd /home/ubuntu/flask
+
+    - name: Install virtualenv package
+      apt:
+        name: python3-virtualenv
+        state: present
+
+    - name: Creating virtual environment
+      file:
+        path: /home/ubuntu/flask/venv
+        state: directory
+        mode: '0755'
+
+    - name: Set up virtual environment
+      pip:
+        name: Flask
+        virtualenv: /home/ubuntu/flask/venv
+
+    - name: Set permissions for virtual environment
+      become: yes
+      become_user: root
+      file:
+        path: /home/ubuntu/flask/venv
+        mode: '0755'
+        recurse: yes
+
+    - name: Copy Flask app file
+      copy:
+        src: app.py
+        dest: /home/ubuntu/flask/venv/app.py
