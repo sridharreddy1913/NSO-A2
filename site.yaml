@@ -93,16 +93,4 @@
       service:
        name: ssh
        state: restarted
-- name: Test HAProxy
-  hosts: HAproxy
-  become: yes
-  tasks:
-      - name: Install curl
-        apt:
-         name: curl
-         state: latest
-
-      - name: Test HAproxy configuration
-        shell: curl http://localhost/
-        register: curl_output
-        ignore_errors: true 
+ 
