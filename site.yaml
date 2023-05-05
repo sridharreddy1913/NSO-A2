@@ -73,7 +73,7 @@
   tasks:
     - name: Setting SSH keepalive interval
       lineinfile:
-       dest: /etc/ssh/config
+       dest: /etc/ssh/ssh_config
        regexp: ^#?ClientAliveInterval
        line: ClientAliveInterval {{ ssh_keepalive_interval }}
        state: present
@@ -82,7 +82,7 @@
 
     - name: Setting SSH keepalive count
       lineinfile:
-       dest: /etc/ssh/config
+       dest: /etc/ssh/ssh_config
        regexp: '^#?ClientAliveCountMax'
        line: 'ClientAliveCountMax 5000'
        state: present
