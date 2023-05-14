@@ -4,6 +4,7 @@
 
 - hosts: webservers
   become: yes
+  become_method: sudo
   tasks:
     - name: Update apt cache
       apt:
@@ -39,12 +40,6 @@
       become_user: ubuntu
       shell: cd /home/ubuntu/flask-app
 
-    - name: Install virtualenv package
-      apt:
-        name: python3-virtualenv
-        state: present
-        update_cache: yes
-
     - name: Creating virtual environment
       file:
         path: /home/ubuntu/flask-app/venv
@@ -74,6 +69,7 @@
       
 - hosts: HAproxy
   become: yes
+  become_method: sudo
   tasks:
     - name: Install HAproxy
       apt:
