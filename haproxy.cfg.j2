@@ -43,6 +43,9 @@ backend backendnodes
         balance roundrobin
 	mode http
 	option forwardfor
-{% for host in groups["webservers"] %}
-	server {{ host }} {{ hostvars[host]["ansible_default_ipv4"]["address"] }}:80 check
+        http-request set-header X-Forwarded-Port %[dst_port]
+        http-request add-header X-Forwarded-Proto https if { ssl_fc }
+{% for dev_servers in groups['webservers'] %}
+    server  {{ dev_servers }} {{
+hostvars[dev_servers]["ansible_default_ipv4"]["address"]}}:80
 {% endfor %}
