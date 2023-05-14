@@ -1,10 +1,6 @@
-Host *
-  ServerAliveInterval 300
-  ServerAliveCountMax 5000
-  
 Host bastionNSO
   User ubuntu
-  HostName 89.42.141.150
+  HostName [ip_address]
   IdentityFile ~/.ssh/id_rsa
   UserKnownHostsFile=~/dev/null
   StrictHostKeyChecking no
@@ -12,7 +8,7 @@ Host bastionNSO
 
 Host HAproxy
   User ubuntu
-  HostName 89.42.141.179
+  HostName [ip_address]
   IdentityFile ~/.ssh/id_rsa
   UserKnownHostsFile=~/dev/null
   StrictHostKeyChecking no
@@ -20,21 +16,21 @@ Host HAproxy
 
 Host devA
   User ubuntu
-  HostName 89.42.141.135
+  HostName [ip_address]
   ProxyJump bastionNSO
   StrictHostKeyChecking no
   PasswordAuthentication no
 
 Host devB
   User ubuntu
-  HostName 89.42.141.184
+  HostName [ip_address]
   ProxyJump bastionNSO
   StrictHostKeyChecking no
   PasswordAuthentication no
   
 Host devC
   User ubuntu
-  HostName 89.42.141.40
+  HostName [ip_address]
   ProxyJump bastionNSO
   StrictHostKeyChecking no
   PasswordAuthentication no
