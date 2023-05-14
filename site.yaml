@@ -68,6 +68,10 @@
       copy:
         src: application2.py
         dest: /home/ubuntu/flask-app/venv/application2.py
+        
+    - name: start flask app
+      shell: python3 application2.py
+      
 - hosts: HAproxy
   become: yes
   tasks:
