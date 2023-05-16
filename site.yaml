@@ -39,6 +39,12 @@
       become: yes
       become_user: ubuntu
       shell: cd /home/ubuntu/flask-app
+      
+    - name: Install virtualenv
+      apt:
+        name: python3-virtualenv
+        state: present
+      
 
     - name: Creating virtual environment
       file:
