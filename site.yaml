@@ -27,51 +27,40 @@
         executable: pip3
         name: flask
         state: present
-    - name: Update apt cache
+        
+    - name: Installing gunicorn for flask services
       apt:
-        update_cache: yes
+        name: gunicorn
 
-    - name: Create flask-app directory in webservers
-      file:
-        path: /home/ubuntu/flask-app
-        state: directory
-    - name: Change directory to flask-app
-      become: yes
-      become_user: ubuntu
-      shell: cd /home/ubuntu/flask-app
-      
-    - name: Install virtualenv
-      apt:
-        name: python3-virtualenv
-        state: present
-      
-
-    - name: Creating virtual environment
-      file:
-        path: /home/ubuntu/flask-app/venv
-        state: directory
-        mode: '0755'
-
-    - name: Set up virtual environment
-      pip:
-        name: Flask
-        virtualenv: /home/ubuntu/flask-app/venv
-
-    - name: Set permissions for virtual environment
-      become: yes
-      become_user: root
-      file:
-        path: /home/ubuntu/flask-app/venv
-        mode: '0755'
-        recurse: yes
 
     - name: Copy Flask app file
       copy:
         src: application2.py
-        dest: /home/ubuntu/flask-app/venv/application2.py
+        dest: /home/ubuntu/application2.py
+        owner: ubuntu
+        mode: '0644'
         
     - name: start flask app
-      shell: python3 application2.py
+      shell: gunicorn -w 2 -D -b 0.0.0.0:5000 application2:app
+      
+    - name: install snmpd
+      apt:
+        name: snmpd
+        state: latest
+        
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        
+    - name: copy required snmpd config files
+      template:
+        src: snmpd.conf.j2
+        dest: /etc/snmp/snmpd.conf
+        
+    - name: Run snmpd service
+      service:
+        name: snmpd
+        state: restarted
       
 - hosts: HAproxy
   become: yes
@@ -87,6 +76,27 @@
         src: haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
       become: yes
+      
+    - name: Installing nginx,snmp and snmp-mibs-downloader
+      apt:
+        update_cache: yes
+        name: [ 'nginx', 'snmp', 'snmp-mibs-downloader' ] 
+        state: latest
+    - name: copy snmp conf file
+      template:
+         src: snmp.conf
+         dest: /etc/snmp/snmp.conf
+         
+    - name: copy nginx config files
+      template:
+         src: nginx.conf.j2
+         dest: /etc/nginx/nginx.conf
+         
+    - name: nginx start
+      service:
+        name: nginx
+        state: restarted  
+    
 
     - name: Restarting HAproxy
       service:
