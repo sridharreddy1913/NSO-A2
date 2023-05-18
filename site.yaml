@@ -41,7 +41,7 @@
         mode: '0755'
         
     - name: start flask app
-      shell: gunicorn -w 2 -D -b 0.0.0.0:5000 application2:app
+      shell: gunicorn -w 2 -D -b 0.0.0.0:80 application2:app
       
     - name: install snmpd
       apt:
