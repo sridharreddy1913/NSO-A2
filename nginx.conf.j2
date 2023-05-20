@@ -4,20 +4,19 @@ pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
 
 events {
-        worker_connections 768;
+        worker_connections 1024;
         # multi_accept on;
 }
 
 stream {
 
     upstream web_servers {
-	{% for host in groups['webservers'] %}
-   	 server {{ hostvars[host]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}:161;
-	{% endfor %}
-    	 }
+        {% for host in groups['webservers'] %}
+         server {{ hostvars[host]["ansible_default_ipv4"]["address"] }}:161;        {% endfor %}
+         }
 
     server {
-        listen 1611 udp;
+        listen 0.0.0.0:1611 udp;
         proxy_pass web_servers;
     }
 }
