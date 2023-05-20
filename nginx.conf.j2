@@ -12,7 +12,8 @@ stream {
 
     upstream web_servers {
         {% for host in groups['webservers'] %}
-         server {{ hostvars[host]["ansible_default_ipv4"]["address"] }}:161;        {% endfor %}
+         server {{ hostvars[host]["ansible_default_ipv4"]["address"] }}:161;
+        {% endfor %}
          }
 
     server {
