@@ -86,10 +86,7 @@
         update_cache: yes
         name: [ 'nginx', 'snmp', 'snmp-mibs-downloader' ] 
         state: latest
-    - name: copy snmp conf file
-      template:
-         src: snmp.conf
-         dest: /etc/snmp/snmp.conf
+    
          
     - name: copy nginx config files
       template:
