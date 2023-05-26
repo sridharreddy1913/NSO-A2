@@ -40,10 +40,10 @@
         owner: ubuntu
         mode: '0755'
         
-    - name: start flask app
+    - name: starting flask app
       shell: gunicorn -w 2 -D -b 0.0.0.0:80 application2:app
       
-    - name: install snmpd
+    - name: install snmpd in webservers
       apt:
         name: snmpd
         state: latest
@@ -52,7 +52,7 @@
       apt:
         update_cache: yes
         
-    - name: copy required snmpd config files
+    - name: copy required snmpd config files into webservers
       template:
         src: snmpd.conf.j2
         dest: /etc/snmp/snmpd.conf
@@ -75,7 +75,7 @@
         name: haproxy
         state: latest
 
-    - name: Configuring HAproxy
+    - name: Configuring HAproxy in HAproxy server
       template:
         src: haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
@@ -88,12 +88,12 @@
         state: latest
     
          
-    - name: copy nginx config files
+    - name: copy required nginx config files
       template:
          src: nginx.conf.j2
          dest: /etc/nginx/nginx.conf
          
-    - name: nginx start
+    - name: start nginx service
       service:
         name: nginx
         state: restarted  
